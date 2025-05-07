@@ -6,7 +6,6 @@ Este projeto realiza a extração de texto (OCR) de faturas da Enel (ou outros d
 
 - [Sobre o PaddleOCR](#sobre-o-paddleocr)
 - [Funcionalidades Principais](#funcionalidades-principais)
-- [Estrutura do Projeto](#estrutura-do-projeto)
 - [Como Usar](#como-usar)
   - [Pré-requisitos](#pré-requisitos)
   - [Configuração do Ambiente](#configuração-do-ambiente)
@@ -47,24 +46,6 @@ Este projeto realiza a extração de texto (OCR) de faturas da Enel (ou outros d
 - **Divisão Inteligente de Página**: Segmenta a imagem da página em múltiplas regiões menores, com uma leve sobreposição entre elas. Esta técnica aumenta a precisão do OCR, especialmente em documentos com leiautes complexos, tabelas ou campos de texto próximos.
 - **Extração de Dados com PaddleOCR**: Utiliza o PaddleOCR configurado para o idioma português para extrair o texto, o nível de confiança de cada reconhecimento e as coordenadas da caixa delimitadora (bounding box) de cada fragmento de texto.
 - **Saída Estruturada em JSON**: Salva os resultados completos do OCR em um arquivo JSON bem formatado. O nome do arquivo JSON será o mesmo do PDF de entrada (ex: `fatura.pdf` -> `fatura.json`). Isso facilita a análise posterior, integração com outros sistemas e a utilização dos dados extraídos.
-
----
-
-## Estrutura do Projeto
-
-```
-paddleocr-enel-parser/
-│
-├── .env                     # Arquivo para variáveis de ambiente (ex: caminho do PDF)
-├── main.py                  # Script principal de OCR
-├── README.md                # Este arquivo
-├── layer/                   # Diretório contendo dependências como Poppler
-│   └── poppler/
-│       └── ... (estrutura do Poppler)
-├── temp_ocr_images/         # Diretório temporário para imagens de regiões (criado em tempo de execução)
-└── NOMEDOPDF.json           # Arquivo de saída gerado pelo script (ex: fatura.json)
-```
-*Observação: Adicione um arquivo `.gitignore` para excluir `__pycache__`, `.venv`, `temp_ocr_images/`, e arquivos `.json` se desejar.*
 
 ---
 
