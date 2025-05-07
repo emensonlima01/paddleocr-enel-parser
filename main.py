@@ -11,7 +11,7 @@ import numpy as np
 
 # Carregar variáveis do arquivo .env
 load_dotenv()
-pdf_path = os.getenv('PDF_PATH', '56164154-959566847213.pdf')
+pdf_path = os.getenv('PDF_PATH')
 # O nome do JSON de saída será igual ao do PDF, trocando a extensão por .json
 output_json_path = os.path.splitext(pdf_path)[0] + '.json'
 
