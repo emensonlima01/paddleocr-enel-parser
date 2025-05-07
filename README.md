@@ -1,43 +1,70 @@
-# paddleocr-enel-parser
+# PaddleOCR Enel Parser
 
-Este projeto realiza a extração de texto (OCR) de faturas da Enel (ou outros PDFs similares) utilizando o PaddleOCR, com pré-processamento de imagem para maximizar a qualidade do reconhecimento.
-
-## Sobre o PaddleOCR
-
-[PaddleOCR](https://paddlepaddle.github.io/PaddleOCR/main/en/index.html) é uma biblioteca open source para reconhecimento óptico de caracteres (OCR) baseada no framework PaddlePaddle, mantido pela Baidu. Ela oferece modelos prontos para diversos idiomas, incluindo português, e suporta detecção e reconhecimento de texto em imagens de forma eficiente e com alta precisão.
-
-Principais características do PaddleOCR:
-- Suporte a múltiplos idiomas e scripts.
-- Modelos otimizados para CPU e GPU.
-- Fácil integração em projetos Python.
-- Comunidade ativa e documentação detalhada.
-
-Repositório oficial: https://github.com/PaddlePaddle/PaddleOCR
-Documentação: https://paddlepaddle.github.io/PaddleOCR/main/en/index.html
-
-O PaddleOCR é mantido pela equipe do PaddlePaddle/Baidu e pela comunidade open source. Recomenda-se sempre consultar a documentação oficial para detalhes de instalação, configuração de modelos e exemplos avançados.
-
-O fluxo completo inclui: conversão do PDF em imagem de alta resolução, pré-processamento (binarização, contraste, remoção de ruído), divisão da página em regiões menores, execução do OCR em cada região e exportação dos resultados em JSON.
-
-## Funcionalidades
-- Converte a primeira página de um PDF em imagem com alta resolução (DPI 400), garantindo que textos pequenos e detalhes sejam capturados.
-- Aplica pré-processamento na imagem (binarização, aumento de contraste e remoção de ruído) para melhorar a qualidade do OCR.
-- Divide a página em regiões menores (com sobreposição) para aumentar a precisão do reconhecimento, especialmente em documentos com tabelas ou campos próximos.
-- Utiliza o PaddleOCR com idioma português para extrair textos, níveis de confiança e posições (bounding box).
-- Salva o resultado do OCR em um arquivo JSON estruturado, facilitando análise e integração.
+Este projeto realiza a extração de texto (OCR) de faturas da Enel (ou outros documentos PDF similares) utilizando a biblioteca PaddleOCR. O processo inclui pré-processamento avançado de imagem para otimizar a qualidade do reconhecimento de texto.
 
 ## Sumário
 
 - [Sobre o PaddleOCR](#sobre-o-paddleocr)
-- [Funcionalidades](#funcionalidades)
+- [Funcionalidades Principais](#funcionalidades-principais)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Como Usar](#como-usar)
   - [Pré-requisitos](#pré-requisitos)
   - [Configuração do Ambiente](#configuração-do-ambiente)
   - [Execução](#execução)
-- [Detalhes do Fluxo](#detalhes-do-fluxo)
-- [Observações](#observações)
+- [Detalhes do Fluxo de Processamento](#detalhes-do-fluxo-de-processamento)
+  - [1. Conversão do PDF em Imagem](#1-conversão-do-pdf-em-imagem)
+  - [2. Pré-processamento da Imagem](#2-pré-processamento-da-imagem)
+  - [3. Divisão da Imagem em Regiões](#3-divisão-da-imagem-em-regiões)
+  - [4. OCR e Agregação dos Resultados](#4-ocr-e-agregação-dos-resultados)
+  - [5. Exportação dos Resultados](#5-exportação-dos-resultados)
+- [Explicação das Funções e Lógica do Código](#explicação-das-funções-e-lógica-do-código)
+- [Observações e Pontos de Melhoria](#observações-e-pontos-de-melhoria)
 - [Licença](#licença)
+
+---
+
+## Sobre o PaddleOCR
+
+[PaddleOCR](https://paddlepaddle.github.io/PaddleOCR/main/en/index.html) é uma biblioteca open-source de Reconhecimento Óptico de Caracteres (OCR) desenvolvida pela Baidu, baseada no framework PaddlePaddle. Ela disponibiliza modelos pré-treinados para diversos idiomas, incluindo o português, e oferece suporte eficiente para detecção e reconhecimento de texto em imagens com alta precisão.
+
+**Principais características do PaddleOCR:**
+- Suporte a múltiplos idiomas e scripts.
+- Modelos otimizados para execução em CPU e GPU.
+- Integração simplificada com projetos Python.
+- Comunidade ativa e documentação abrangente.
+
+- **Repositório Oficial:** [https://github.com/PaddlePaddle/PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)
+- **Documentação:** [https://paddlepaddle.github.io/PaddleOCR/main/en/index.html](https://paddlepaddle.github.io/PaddleOCR/main/en/index.html)
+
+> O PaddleOCR é mantido pela equipe do PaddlePaddle/Baidu e pela comunidade open-source. Recomenda-se consultar a documentação oficial para informações detalhadas sobre instalação, configuração de modelos e exemplos avançados.
+
+---
+
+## Funcionalidades Principais
+
+- **Conversão de PDF para Imagem**: Converte a primeira página de um arquivo PDF em uma imagem de alta resolução (DPI 400 por padrão), crucial para capturar textos pequenos e detalhes finos.
+- **Pré-processamento de Imagem**: Aplica técnicas como conversão para escala de cinza, aumento de contraste, binarização e filtro de mediana para remover ruídos, melhorando significativamente a qualidade da imagem para o OCR.
+- **Divisão Inteligente de Página**: Segmenta a imagem da página em múltiplas regiões menores, com uma leve sobreposição entre elas. Esta técnica aumenta a precisão do OCR, especialmente em documentos com leiautes complexos, tabelas ou campos de texto próximos.
+- **Extração de Dados com PaddleOCR**: Utiliza o PaddleOCR configurado para o idioma português para extrair o texto, o nível de confiança de cada reconhecimento e as coordenadas da caixa delimitadora (bounding box) de cada fragmento de texto.
+- **Saída Estruturada em JSON**: Salva os resultados completos do OCR em um arquivo JSON bem formatado. O nome do arquivo JSON será o mesmo do PDF de entrada (ex: `fatura.pdf` -> `fatura.json`). Isso facilita a análise posterior, integração com outros sistemas e a utilização dos dados extraídos.
+
+---
+
+## Estrutura do Projeto
+
+```
+paddleocr-enel-parser/
+│
+├── .env                     # Arquivo para variáveis de ambiente (ex: caminho do PDF)
+├── main.py                  # Script principal de OCR
+├── README.md                # Este arquivo
+├── layer/                   # Diretório contendo dependências como Poppler
+│   └── poppler/
+│       └── ... (estrutura do Poppler)
+├── temp_ocr_images/         # Diretório temporário para imagens de regiões (criado em tempo de execução)
+└── NOMEDOPDF.json           # Arquivo de saída gerado pelo script (ex: fatura.json)
+```
+*Observação: Adicione um arquivo `.gitignore` para excluir `__pycache__`, `.venv`, `temp_ocr_images/`, e arquivos `.json` se desejar.*
 
 ---
 
@@ -45,84 +72,113 @@ O fluxo completo inclui: conversão do PDF em imagem de alta resolução, pré-p
 
 ### Pré-requisitos
 
-- **Python 3.10** (recomendado)
-- Ambiente virtual dedicado
+- **Python 3.8+** (Python 3.10 é recomendado)
+- Gerenciador de pacotes Pip
+- Ambiente virtual (recomendado para isolar dependências)
+- **Poppler**: Necessário para a conversão de PDF para imagem. O projeto inclui uma versão para Windows. Para outros sistemas operacionais, pode ser necessário instalar separadamente.
 
 ### Configuração do Ambiente
 
-1. Instale o Python 3.10:
-   [Download Python 3.10](https://www.python.org/downloads/release/python-3100/)
-   (Marque "Add Python to PATH" na instalação)
+1.  **Clone o repositório (se aplicável) ou baixe os arquivos.**
 
-2. No terminal, crie e ative o ambiente virtual:
-   ```powershell
-   python -m venv .venv
-   .venv\Scripts\activate
-   ```
+2.  **Crie e ative um ambiente virtual:**
+    No terminal, navegue até o diretório do projeto e execute:
+    ```bash
+    python -m venv .venv
+    ```
+    Para ativar (Windows PowerShell):
+    ```powershell
+    .venv\Scripts\Activate.ps1
+    ```
+    Para ativar (Linux/macOS):
+    ```bash
+    source .venv/bin/activate
+    ```
 
-3. Atualize o pip (opcional):
-   ```powershell
-   python -m pip install --upgrade pip
-   ```
+3.  **Instale as dependências Python:**
+    ```bash
+    pip install paddleocr pdf2image Pillow python-dotenv numpy
+    ```
+    *(Observação: `numpy` é frequentemente uma dependência do `paddleocr` ou `Pillow`)*
 
-4. Instale as dependências:
-   ```powershell
-   pip install paddleocr pdf2image pillow numpy python-dotenv
-   ```
-
-5. Certifique-se de que o Poppler está em `layer/poppler/layer/poppler/poppler-23.11.0/Library/bin` (já incluso no repositório para Windows).
+4.  **Verifique o Poppler:**
+    O script espera encontrar o Poppler no caminho `layer/poppler/layer/poppler/poppler-23.11.0/Library/bin` relativo ao `main.py`. Certifique-se de que essa estrutura existe ou ajuste o `POPPLER_PATH` no `main.py` conforme necessário.
 
 ### Execução
 
-1. Coloque o PDF desejado na raiz do projeto.
-2. Configure o arquivo `.env` na raiz do projeto:
-   ```
-   PDF_PATH=56164154-959566847213.pdf
-   ```
+1.  **Prepare o arquivo PDF**: Coloque o arquivo PDF que deseja processar no diretório raiz do projeto (ou em qualquer local e ajuste o caminho no `.env`).
 
-3. Execute o script:
-   ```powershell
-   python main.py
-   ```
-   O resultado será salvo em um arquivo `.json` com o mesmo nome do PDF.
+2.  **Configure o arquivo `.env`**:
+    Crie um arquivo chamado `.env` na raiz do projeto com o seguinte conteúdo, substituindo `nome_do_seu_arquivo.pdf` pelo nome real do seu PDF:
+    ```env
+    PDF_PATH=nome_do_seu_arquivo.pdf
+    ```
 
-## Passo a Passo Detalhado
+3.  **Execute o script**:
+    No terminal, com o ambiente virtual ativado, execute:
+    ```bash
+    python main.py
+    ```
+    O script processará o PDF e salvará os resultados em um arquivo JSON com o mesmo nome do PDF de entrada, mas com a extensão `.json` (ex: `nome_do_seu_arquivo.json`), no mesmo diretório do PDF.
+
+---
+
+## Detalhes do Fluxo de Processamento
+
+O script segue um pipeline robusto para extrair texto de documentos PDF:
 
 ### 1. Conversão do PDF em Imagem
-O script utiliza `pdf2image.convert_from_path` para converter a primeira página do PDF em uma imagem PNG de alta resolução (DPI 400). Isso é fundamental para garantir que textos pequenos e detalhes sejam capturados pelo OCR.
+Utilizando a biblioteca `pdf2image` e o backend Poppler, a primeira página do PDF especificado é convertida para um objeto de imagem da biblioteca Pillow. A conversão é feita com uma alta resolução (DPI 400 por padrão) para preservar detalhes do texto.
 
-### 2. Função `preprocess_image(img)`
-Esta função realiza o pré-processamento da imagem para maximizar a qualidade do OCR:
-1. Converte a imagem para escala de cinza (reduz ruído de cor).
-2. Aumenta o contraste (deixa o texto mais destacado).
-3. Binariza a imagem (preto e branco), facilitando a separação do texto do fundo.
-4. Aplica filtro de mediana para remover pequenos ruídos e sujeiras.
-Esse pré-processamento é essencial para melhorar a nitidez do texto e reduzir interferências de fundo.
+### 2. Pré-processamento da Imagem
+A função `preprocess_image` aplica uma série de filtros para otimizar a imagem para OCR:
+    1.  **Escala de Cinza**: Converte a imagem para tons de cinza, eliminando informações de cor que podem ser ruído para o OCR.
+    2.  **Aumento de Contraste**: Realça a diferença entre o texto e o fundo.
+    3.  **Binarização**: Transforma a imagem em preto e branco puro, com base em um limiar (threshold), facilitando a segmentação do texto.
+    4.  **Filtro de Mediana**: Remove pequenos ruídos ("sal e pimenta") e suaviza as bordas do texto.
 
-### 3. Função `split_image_regions(img, n_rows=2, n_cols=2, overlap=0.08)`
-Divide a imagem da página em 4 regiões (2 linhas x 2 colunas), com uma pequena sobreposição entre elas. Isso aumenta a chance de capturar textos que ficam próximos às margens ou entre colunas, comuns em faturas e boletos.
+### 3. Divisão da Imagem em Regiões
+A função `split_image_into_regions` divide a imagem pré-processada em um grid (por padrão, 2x2 = 4 regiões). Uma sobreposição configurável é aplicada entre as regiões adjacentes para garantir que nenhum texto seja perdido nas bordas das divisões. Processar regiões menores pode melhorar a precisão do OCR, especialmente em documentos densos.
 
-### 4. OCR e Montagem do Resultado
-Para cada região, a imagem é salva temporariamente, processada pelo PaddleOCR e o resultado é ajustado para as coordenadas da página inteira. Todos os textos reconhecidos, junto com suas posições e níveis de confiança, são salvos em um arquivo JSON estruturado.
+### 4. OCR e Agregação dos Resultados
+Para cada região:
+    - A região é salva temporariamente como um arquivo PNG.
+    - O motor PaddleOCR (`ocr.ocr()`) é invocado para extrair texto, confiança e coordenadas da caixa delimitadora.
+    - As coordenadas da caixa delimitadora são ajustadas para refletir sua posição na imagem original da página inteira.
+    - Os dados de todas as regiões são agregados para formar o resultado completo da página.
+    - As imagens temporárias das regiões são removidas.
 
 ### 5. Exportação dos Resultados
-O resultado do OCR é salvo em `resultado_ocr.json`, contendo uma lista de textos extraídos, suas posições (bounding box) e o nível de confiança de cada detecção.
+Os dados extraídos de todas as páginas processadas (atualmente apenas a primeira) são compilados em uma lista. Esta lista é então salva em um arquivo JSON. O nome do arquivo de saída é derivado do nome do arquivo PDF de entrada (ex: `fatura.pdf` se torna `fatura.json`). O JSON inclui o número da página, o texto extraído, a confiança e as coordenadas da caixa delimitadora para cada detecção.
 
-## Explicação das Funções e Lógica do Código
+---
 
-- **Pré-processamento:** Melhora a qualidade da imagem para o OCR, tornando o texto mais legível e reduzindo ruídos.
-- **Divisão em regiões:** Aumenta a cobertura do OCR, evitando perda de informações em áreas de borda ou colunas.
-- **PaddleOCR:** Utilizado com idioma português, reconhece textos e retorna suas posições e confiabilidade.
-- **Estrutura modular:** Fácil de adaptar para outros tipos de documentos ou ajustes de pré-processamento.
+## Explicação das Funções e Lógica do Código (no `main.py` melhorado)
 
-## Observações
-- O caminho do Poppler é definido de forma relativa ao script, facilitando o uso em diferentes máquinas.
-- O OCR pode ser ajustado alterando o pré-processamento ou a divisão de regiões.
-- O projeto está focado em faturas da Enel, mas pode ser adaptado para outros PDFs.
-- O pré-processamento pode ser ajustado conforme o tipo de documento (por exemplo, mudando o threshold da binarização).
-- O PaddleOCR está configurado para português (`lang='pt'`), mas pode ser alterado para outros idiomas.
-- O resultado em JSON pode ser usado para buscas, análises ou integração com outros sistemas.
-- O projeto está focado em faturas da Enel, mas pode ser adaptado para outros PDFs e cenários de OCR.
+- **Constantes de Configuração**: Parâmetros como caminhos, DPI, configurações de pré-processamento e divisão de regiões são definidos como constantes no início do script para fácil ajuste.
+- **`convert_pdf_to_image()`**: Isola a lógica de conversão de PDF.
+- **`preprocess_image()`**: Contém as etapas de melhoria da qualidade da imagem.
+- **`split_image_into_regions()`**: Gerencia a divisão da imagem em partes menores com sobreposição.
+- **`perform_ocr_on_image_regions()`**: Orquestra o pré-processamento, divisão, OCR por região e coleta de resultados para uma única página.
+- **`save_results_to_json()`**: Responsável por escrever os dados extraídos no arquivo JSON.
+- **`main()`**: Função principal que controla o fluxo de execução, desde o carregamento da configuração até o salvamento dos resultados, incluindo logging e tratamento básico de erros.
+- **Logging**: O módulo `logging` é usado para fornecer feedback sobre o progresso e quaisquer problemas encontrados.
+
+---
+
+## Observações e Pontos de Melhoria
+
+- **Caminho do Poppler**: Definido de forma relativa, mas a estrutura aninhada `layer/poppler/layer/poppler` pode ser um erro de digitação e poderia ser simplificada para `layer/poppler-XYZ/Library/bin`. Verifique e ajuste se necessário.
+- **Ajustes de OCR**: A eficácia do OCR pode variar. Experimente com os parâmetros em `preprocess_image` (contraste, limiar de binarização, tamanho do filtro) e `split_image_into_regions` (número de linhas/colunas, porcentagem de sobreposição) para otimizar para diferentes tipos de documentos.
+- **Múltiplas Páginas**: O script atualmente processa apenas a primeira página do PDF (`first_page=1`, `last_page=1`). Pode ser estendido para processar múltiplas páginas ou o documento inteiro, ajustando os parâmetros `first_page` e `last_page` na função `convert_pdf_to_image` e iterando sobre as imagens resultantes.
+- **GPU para PaddleOCR**: Se uma GPU compatível estiver disponível e configurada, mudar `use_gpu=False` para `use_gpu=True` no `main.py` pode acelerar significativamente o processo de OCR.
+- **Tratamento de Erros Avançado**: O tratamento de erros pode ser expandido para ser mais granular ou para tentar diferentes estratégias de recuperação.
+- **Modularidade**: Para projetos maiores, as funções poderiam ser organizadas em classes ou módulos separados.
+- **Teste**: Adicionar testes unitários e de integração para garantir a robustez das funções.
+- **Interface de Usuário**: Para facilitar o uso por não desenvolvedores, uma interface gráfica simples (ex: com Tkinter, PyQt) ou uma interface de linha de comando mais elaborada (ex: com `argparse` ou `Typer`) poderia ser desenvolvida.
+
+---
 
 ## Licença
-Este projeto é apenas para fins educacionais e de demonstração.
+
+Este projeto é disponibilizado para fins educacionais e de demonstração. Sinta-se à vontade para adaptá-lo e utilizá-lo conforme suas necessidades.
